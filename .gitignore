@@ -1,0 +1,55 @@
+# ========== Python Files ==========
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+*.log
+
+# ========== Environment & Secrets ==========
+.env
+.venv/
+.env.*
+
+# ========== VS Code Settings ==========
+.vscode/
+
+# ========== OS-Specific ==========
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ========== Testing / Coverage ==========
+*.cover
+coverage.*
+htmlcov/
+.tox/
+.nox/
+.pytest_cache/
+.cache/
+
+# ========== Packaging ==========
+build/
+dist/
+*.egg-info/
+
+# ========== Jupyter ==========
+.ipynb_checkpoints/
+
+# ========== Backup Files ==========
+*.bak
+*.swp
+*.tmp
+*.orig
+
+# ========== Evaluation Reports ==========
+reports/*
+!reports/.gitkeep
+!reports/sample_eval.md
