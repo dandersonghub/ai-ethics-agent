@@ -4,8 +4,6 @@ from pathlib import Path
 from datetime import datetime
 from docx import Document
 from docx.shared import Pt
-from docx.oxml.ns import qn
-from docx.oxml import OxmlElement
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 
 # Streamlit page config
@@ -45,52 +43,55 @@ if st.button("Evaluate Use Case"):
         for key, value in results.items():
             markdown_content += f"## {key}\n{value.strip()}\n\n"
 
-        # Save Markdown file
+        # Save Markdown file to reports/
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         reports_dir = Path("reports")
         reports_dir.mkdir(exist_ok=True)
         md_path = reports_dir / f"eval_{timestamp}.md"
-        docx_path = reports_dir / f"eval_{timestamp}.docx"
         md_path.write_text(markdown_content, encoding="utf-8")
 
-        # Convert to polished .docx
+        # Generate .docx from markdown_content (no saving to disk)
         doc = Document()
         styles = doc.styles
-        normal_style = styles["Normal"].font
-        normal_style.name = "Calibri"
-        normal_style.size = Pt(11)
+        styles["Normal"].font.name = "Calibri"
+        styles["Normal"].font.size = Pt(11)
 
-        doc.add_heading("AI Use Case Evaluation Report", level=1)
-        p = doc.add_paragraph()
-        p.add_run("Use Case: ").bold = True
-        p.add_run(user_input.strip())
-
-        for category, explanation in results.items():
-            doc.add_heading(category, level=2)
-            for line in explanation.strip().split("\n"):
-                if line.strip().startswith("•") or line.strip().startswith("-"):
-                    para = doc.add_paragraph(style='List Bullet')
-                    para.add_run(line.strip()[1:].strip())
-                elif line.strip().startswith("**") and line.strip().endswith("**"):
-                    para = doc.add_paragraph()
-                    para.add_run(line.strip().strip("**")).bold = True
-                elif line.strip().startswith("**"):
-                    parts = line.strip().split("**")
-                    para = doc.add_paragraph()
-                    para.add_run(parts[1]).bold = True
-                    para.add_run(parts[2] if len(parts) > 2 else "")
-                else:
-                    doc.add_paragraph(line.strip())
-
-        doc.save(docx_path)
+        for line in markdown_content.strip().split("\n"):
+            line = line.strip()
+            if line.startswith("### "):
+                doc.add_heading(line[4:].strip(), level=3)
+            elif line.startswith("## "):
+                doc.add_heading(line[3:].strip(), level=2)
+            elif line.startswith("# "):
+                doc.add_heading(line[2:].strip(), level=1)
+            elif line.startswith("**") and line.endswith("**"):
+                para = doc.add_paragraph()
+                run = para.add_run(line[2:-2])
+                run.bold = True
+            elif "**" in line:
+                para = doc.add_paragraph()
+                segments = line.split("**")
+                for i, segment in enumerate(segments):
+                    run = para.add_run(segment)
+                    if i % 2 == 1:
+                        run.bold = True
+            elif line.startswith("-") or line.startswith("\u2022"):
+                para = doc.add_paragraph(line[1:].strip(), style="List Bullet")
+            elif line:
+                doc.add_paragraph(line)
 
         # Display report
         st.subheader("✅ Evaluation Results")
         st.markdown(markdown_content)
 
-        # Download button for .docx
-        with open(docx_path, "rb") as f:
-            st.download_button("📄 Download Word Report (.docx)", f, file_name=docx_path.name, mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-
-        # Clear input box
-        st.session_state.use_case_input = ""
+        # Download .docx (in-memory only)
+        from io import BytesIO
+        docx_buffer = BytesIO()
+        doc.save(docx_buffer)
+        docx_buffer.seek(0)
+        st.download_button(
+            "📄 Download Word Report (.docx)",
+            data=docx_buffer,
+            file_name=f"eval_{timestamp}.docx",
+            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        )
