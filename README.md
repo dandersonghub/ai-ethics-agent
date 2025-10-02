@@ -42,7 +42,6 @@ Whether you're a developer, researcher, or project lead, this tool helps uncover
 - [LangChain](https://www.langchain.com/)
 - [OpenAI API](https://platform.openai.com/)
 - [python-docx](https://pypi.org/project/python-docx/)
-- `uv` for lightweight package + virtual environment management
 
 ---
 
