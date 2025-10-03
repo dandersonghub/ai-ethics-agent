@@ -88,7 +88,7 @@ AI-Ethics-Agent/
 ## 👤 Author
 
 **Daniel Anderson**  
-🔗 [LinkedIn](www.linkedin.com/in/daniel-anderson-la)  
+🔗 [LinkedIn](https://www.linkedin.com/in/daniel-anderson-la/)  
 📂 [GitHub Profile](https://github.com/dandersonghub)
 
 ---
