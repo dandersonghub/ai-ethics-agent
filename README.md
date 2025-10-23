@@ -1,4 +1,4 @@
-# 🛡️ AI Ethics Agent
+# AI Ethics Agent
 
 A simple, practical application that helps **evaluate AI use cases** for ethical risk across four key dimensions:
 
@@ -11,14 +11,14 @@ Whether you're a developer, researcher, or project lead, this tool helps uncover
 
 ---
 
-## 🚀 Try the Live App
+## Try the Live App
 
 👉 [Launch the AI Ethics Agent on Streamlit Cloud](https://ai-ethics-agent.streamlit.app/)
 
 
 ---
 
-## ✨ What It Does
+## What It Does
 
 1. **You describe an AI use case** (e.g., predicting hospital readmission using patient data).
 2. The app analyzes it using OpenAI's `gpt-4o-mini` across 4 ethical categories.
@@ -82,14 +82,6 @@ AI-Ethics-Agent/
 ├── .gitignore           # Excludes .env, .venv, reports, etc.
 ├── README.md            # You're reading it!
 ```
-
----
-
-## 👤 Author
-
-**Daniel Anderson**  
-🔗 [LinkedIn](https://www.linkedin.com/in/daniel-anderson-la/)  
-📂 [GitHub Profile](https://github.com/dandersonghub)
 
 ---
 
