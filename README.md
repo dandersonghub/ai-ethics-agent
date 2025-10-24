@@ -1,4 +1,5 @@
 # AI Ethics Agent
+👉 **Try the Live App:** [ai-ethics-agent.streamlit.app](https://ai-ethics-agent.streamlit.app)
 
 A simple, practical application that helps **evaluate AI use cases** for ethical risk across four key dimensions:
 
@@ -8,13 +9,6 @@ A simple, practical application that helps **evaluate AI use cases** for ethical
 - **Governance & Oversight**
 
 Whether you're a developer, researcher, or project lead, this tool helps uncover potential ethical risks **before deployment** — especially for AI systems that affect real people.
-
----
-
-## Try the Live App
-
-👉 [Launch the AI Ethics Agent on Streamlit Cloud](https://ai-ethics-agent.streamlit.app/)
-
 
 ---
 
