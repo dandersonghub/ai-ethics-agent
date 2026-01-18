@@ -8,6 +8,8 @@ from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 
 # Streamlit page config
 st.set_page_config(page_title="AI Ethics Agent", layout="centered")
+if "step_log" not in st.session_state:
+    st.session_state.step_log = []
 st.title("🛡️ AI Ethics Agent")
 st.markdown("""
 Use this tool to **evaluate your AI use case** across key ethical risk categories:
@@ -33,8 +35,19 @@ if st.button("Evaluate Use Case"):
         st.warning("Please enter a description before submitting.")
     else:
         progress = st.progress(0, text="Evaluating ethical risks...")
+        
+        # Clear previous run's steps
+        st.session_state.step_log = []
 
-        results = evaluate_use_case(user_input)
+        # Live processing feed
+        st.subheader("🔎 Agent Processing")
+        step_box = st.empty()
+
+        def emit(step: str):
+            st.session_state.step_log.append(step)
+            step_box.markdown("\n".join([f"- {s}" for s in st.session_state.step_log]))
+
+        results = evaluate_use_case(user_input, emit=emit)
 
         progress.progress(100, text="✅ Evaluation complete!")
 
