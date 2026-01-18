@@ -22,25 +22,49 @@ async def run_async(prompt_template: str, user_input: str):
     return await llm.ainvoke(full_prompt)
 
 # Main orchestrator (async)
-async def evaluate_use_case_async(user_input):
+async def evaluate_use_case_async(
+    user_input: str,
+    emit=None,
+):
+    """
+    Evaluate a use case across ethics categories concurrently.
+    If `emit` is provided, it will be called with step messages for UI progress.
+    """
+
+    def _emit(message: str):
+        if emit:
+            emit(message)
+
     prompts = load_prompts()
     categories = ["bias", "privacy", "explainability", "governance"]
 
-    tasks = [
-        run_async(prompts[f"{cat}_prompt"], user_input)
-        for cat in categories
-    ]
+    _emit("Loaded prompts")
+    _emit("Starting category evaluations")
 
-    responses = await asyncio.gather(*tasks)
+    tasks = []
 
-    results = {
-        cat.capitalize(): response.content
-        for cat, response in zip(categories, responses)
-    }
+    for category in categories:
+        _emit(f"▶️ Started: {category.capitalize()}")
+        task = run_async(prompts[f"{category}_prompt"], user_input)
+        tasks.append((category, task))
 
+    responses = await asyncio.gather(
+        *[task for _, task in tasks]
+    )
+
+    results = {}
+
+    for category, response in zip(categories, responses):
+        results[category.capitalize()] = response.content
+        _emit(f"✅ Completed: {category.capitalize()}")
+
+    _emit("Compiling final results")
     return results
 
+
 # Wrapper for Streamlit compatibility (runs async loop in sync context)
-def evaluate_use_case(user_input):
-    return asyncio.run(evaluate_use_case_async(user_input))
+def evaluate_use_case(user_input, emit=None):
+    return asyncio.run(
+        evaluate_use_case_async(user_input, emit=emit)
+    )
 
