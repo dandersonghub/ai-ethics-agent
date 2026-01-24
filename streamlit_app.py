@@ -52,7 +52,8 @@ if st.button("Evaluate Use Case"):
         run_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         start_time = time.time()
         
-        results = evaluate_use_case(user_input, emit=emit)
+        results, plan = evaluate_use_case(user_input, emit=emit)
+
         
         duration_s = round(time.time() - start_time, 2)
 
@@ -60,6 +61,13 @@ if st.button("Evaluate Use Case"):
 
         # Build Markdown-style string for report
         markdown_content = f"# AI Use Case Evaluation Report\n\n**Use Case:**\n{user_input.strip()}\n\n"
+        # Optional: show follow-up questions if planner needs more detail
+        if plan.follow_up_questions:
+            markdown_content += "## Follow-up Questions (to improve accuracy)\n"
+            for q in plan.follow_up_questions:
+                markdown_content += f"- {q}\n"
+            markdown_content += "\n"
+
         for key, value in results.items():
             markdown_content += f"## {key}\n{value.strip()}\n\n"
 

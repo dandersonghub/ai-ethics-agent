@@ -3,6 +3,8 @@ import yaml
 import asyncio
 from dotenv import load_dotenv
 from langchain_openai import ChatOpenAI
+from workflow.planner import make_plan
+
 
 # Load environment variables
 load_dotenv()
@@ -17,9 +19,16 @@ def load_prompts(filepath="prompts.yaml"):
         return yaml.safe_load(f)
 
 # Async evaluation function
-async def run_async(prompt_template: str, user_input: str):
-    full_prompt = f"{prompt_template}\n\nUse Case:\n{user_input}"
+async def run_async(prompt_template: str, user_input: str, depth: str):
+    depth_instruction = f"\n\nEvaluation depth: {depth.upper()}.\n"
+    depth_instruction += (
+        "If QUICK: be concise.\n"
+        "If STANDARD: balanced detail.\n"
+        "If DEEP: be thorough, include edge cases and mitigations.\n"
+    )
+    full_prompt = f"{prompt_template}{depth_instruction}\n\nUse Case:\n{user_input}"
     return await llm.ainvoke(full_prompt)
+
 
 # Main orchestrator (async)
 async def evaluate_use_case_async(
@@ -35,32 +44,38 @@ async def evaluate_use_case_async(
         if emit:
             emit(message)
 
-    prompts = load_prompts()
-    categories = ["bias", "privacy", "explainability", "governance"]
-
+    prompts = load_prompts()  
     _emit("Loaded prompts")
+
+    # --- Planner step ---
+    plan = await make_plan(llm, user_input, emit=emit)
+    categories = plan.categories
+
+    _emit(f"🧠 Planner: categories = {', '.join([c.capitalize() for c in categories])}")
+    for c in categories:
+        _emit(f"🧠 Planner: depth[{c}] = {plan.depth.get(c, 'standard')}")
+    if plan.follow_up_questions:
+        _emit(f"🧠 Planner: {len(plan.follow_up_questions)} follow-up question(s) generated")
+
     _emit("Starting category evaluations")
 
+    # --- Run planned categories concurrently ---
     tasks = []
-
     for category in categories:
-        _emit(f"▶️ Started: {category.capitalize()}")
-        task = run_async(prompts[f"{category}_prompt"], user_input)
+        depth = plan.depth.get(category, "standard")
+        _emit(f"▶️ Started: {category.capitalize()} ({depth})")
+        task = run_async(prompts[f"{category}_prompt"], user_input, depth)
         tasks.append((category, task))
 
-    responses = await asyncio.gather(
-        *[task for _, task in tasks]
-    )
+    responses = await asyncio.gather(*[task for _, task in tasks])
 
     results = {}
-
     for category, response in zip(categories, responses):
         results[category.capitalize()] = response.content
         _emit(f"✅ Completed: {category.capitalize()}")
 
     _emit("Compiling final results")
-    return results
-
+    return results, plan
 
 # Wrapper for Streamlit compatibility (runs async loop in sync context)
 def evaluate_use_case(user_input, emit=None):
