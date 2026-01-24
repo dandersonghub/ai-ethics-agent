@@ -2,12 +2,14 @@ import streamlit as st
 from agent import evaluate_use_case
 from pathlib import Path
 from datetime import datetime
+import time 
 from docx import Document
 from docx.shared import Pt
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 
 # Streamlit page config
 st.set_page_config(page_title="AI Ethics Agent", layout="centered")
+MODEL_NAME = "gpt-4o-mini"
 if "step_log" not in st.session_state:
     st.session_state.step_log = []
 st.title("🛡️ AI Ethics Agent")
@@ -47,7 +49,12 @@ if st.button("Evaluate Use Case"):
             st.session_state.step_log.append(step)
             step_box.markdown("\n".join([f"- {s}" for s in st.session_state.step_log]))
 
+        run_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        start_time = time.time()
+        
         results = evaluate_use_case(user_input, emit=emit)
+        
+        duration_s = round(time.time() - start_time, 2)
 
         progress.progress(100, text="✅ Evaluation complete!")
 
@@ -56,6 +63,14 @@ if st.button("Evaluate Use Case"):
         for key, value in results.items():
             markdown_content += f"## {key}\n{value.strip()}\n\n"
 
+        markdown_content += (
+            "---\n\n"
+            "## Report Metadata\n"
+            f"- **Timestamp:** {run_timestamp}\n"
+            f"- **Model:** {MODEL_NAME}\n"
+            f"- **Runtime (seconds):** {duration_s}\n"
+        )
+        
         # Save Markdown file to reports/
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         reports_dir = Path("reports")
@@ -92,6 +107,7 @@ if st.button("Evaluate Use Case"):
                 para = doc.add_paragraph(line[1:].strip(), style="List Bullet")
             elif line:
                 doc.add_paragraph(line)
+                
 
         # Display report
         st.subheader("✅ Evaluation Results")
