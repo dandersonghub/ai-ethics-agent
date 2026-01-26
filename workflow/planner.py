@@ -5,6 +5,29 @@ from langchain_openai import ChatOpenAI
 from workflow.types import Plan
 
 REQUIRED_CATEGORIES = ["bias", "privacy", "explainability", "governance"]
+DOMAIN_HEURISTICS = [
+    {
+        "name": "healthcare",
+        "keywords": ["patient", "clinical", "hospital", "diagnosis", "medical", "phi", "hipaa", "ehr", "health record", "retina", "radiology"],
+        "depth": {"bias": "deep", "privacy": "deep", "explainability": "standard", "governance": "deep"},
+    },
+    {
+        "name": "hiring_credit_education",
+        "keywords": ["hire", "hiring", "resume", "recruit", "candidate", "credit", "loan", "underwriting", "student", "admissions", "education"],
+        "depth": {"bias": "deep", "privacy": "standard", "explainability": "deep", "governance": "standard"},
+    },
+    {
+        "name": "minors_children",
+        "keywords": ["child", "children", "minor", "student", "k-12", "teen", "juvenile"],
+        "depth": {"bias": "standard", "privacy": "deep", "explainability": "standard", "governance": "deep"},
+    },
+    {
+        "name": "biometrics_surveillance_location",
+        "keywords": ["face", "facial", "biometric", "camera", "surveillance", "tracking", "location", "gps", "fingerprint", "iris"],
+        "depth": {"bias": "standard", "privacy": "deep", "explainability": "standard", "governance": "deep"},
+    },
+]
+
 
 PLANNER_PROMPT = """
 You are an AI planning agent for an AI Ethics evaluation workflow.
@@ -60,6 +83,24 @@ def _enforce_required_categories(plan: Plan) -> Plan:
 
     return plan
 
+def _detect_domains(user_input: str):
+    text = user_input.lower()
+    matched = []
+    for rule in DOMAIN_HEURISTICS:
+        if any(k in text for k in rule["keywords"]):
+            matched.append(rule)
+    return matched
+
+def _apply_heuristics(user_input: str, plan: Plan) -> Plan:
+    matched = _detect_domains(user_input)
+
+    # Apply matched heuristics (if multiple match, later rules can overwrite earlier ones)
+    for rule in matched:
+        for cat, d in rule["depth"].items():
+            plan.depth[cat] = d
+
+    return plan
+
 async def make_plan(
     llm: ChatOpenAI,
     user_input: str,
@@ -78,8 +119,10 @@ async def make_plan(
 
     try:
         plan = _enforce_required_categories(_parse_plan(text1))
+        plan = _apply_heuristics(user_input, plan)
         _emit("🧠 Planner: plan created (valid JSON)")
         return plan
+
 
     except Exception as e1:
         _emit("🧠 Planner: invalid JSON, retrying once")
@@ -96,6 +139,7 @@ async def make_plan(
         text2 = resp2.content.strip()
 
         plan = _enforce_required_categories(_parse_plan(text2))
+        plan = _apply_heuristics(user_input, plan)
         _emit("🧠 Planner: plan created (valid JSON after retry)")
         return plan
 
