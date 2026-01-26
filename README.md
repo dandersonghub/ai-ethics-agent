@@ -1,45 +1,82 @@
 # AI Ethics Agent
 👉 **Try the Live App:** [ai-ethics-agent.streamlit.app](https://ai-ethics-agent.streamlit.app)
 
-A simple, practical application that helps **evaluate AI use cases** for ethical risk across four key dimensions:
+The **AI Ethics Agent** is an agentic application that helps you **evaluate the ethical implications of AI use cases**.
+
+It analyzes AI ideas across **four core ethical risk categories**:
 
 - **Bias**
 - **Privacy**
 - **Explainability**
 - **Governance & Oversight**
 
-Whether you're a developer, researcher, or project lead, this tool helps uncover potential ethical risks **before deployment** — especially for AI systems that affect real people.
+This tool is designed to be:
+- Useful for **practitioners** exploring real AI use cases
+- Clear and accessible for **non-experts**
+- A practical **demo of agentic AI workflows**
 
 ---
 
-## What It Does
+## Why This Exists
 
-1. **You describe an AI use case** (e.g., predicting hospital readmission using patient data).
-2. The app analyzes it using OpenAI's `gpt-4o-mini` across 4 ethical categories.
-3. It generates a report with:
-   - Risk level (Low, Moderate, High)
-   - Short explanation for each category
-4. You can **view the report**, **copy it**, or **download it as a .docx file**.
+Teams often get excited about *what AI can do* — and only later discover:
+- biased outcomes,
+- privacy violations,
+- lack of explainability,
+- or governance failures that require rollbacks, fines, or reputational repair.
+
+This agent is meant to act as a **pause button**:
+
+> *“What ethical risks might we be missing — and how should we think about them now?”*
 
 ---
 
-## 📸 Preview
+## What the Agent Does
+
+1. **You describe an AI use case**  
+   (e.g., “An AI system that screens resumes for hiring decisions.”)
+
+2. A **planning agent** analyzes the use case and:
+   - selects relevant ethical categories,
+   - determines evaluation depth per category,
+   - optionally suggests follow-up questions.
+
+3. The agent evaluates the use case across:
+   - Bias  
+   - Privacy  
+   - Explainability  
+   - Governance & Oversight  
+
+4. It generates a concise, structured **AI Use Case Evaluation Report** that includes:
+   - Ethical context for each category
+   - Key risks specific to the use case
+   - Practical mitigation considerations
+   - Relevant **references & further reading**
+
+5. You can:
+   - view the report directly in the app,
+   - download it as **Markdown (.md)** or **HTML (.html)**.
+
+---
+
+
+## Preview
 
 ![Screenshot](screenshot.png)  
 
 
 ---
 
-## 🧠 Technologies Used
+## Technologies Used
 
-- [Streamlit](https://streamlit.io/)
-- [LangChain](https://www.langchain.com/)
-- [OpenAI API](https://platform.openai.com/)
-- [python-docx](https://pypi.org/project/python-docx/)
+- **Streamlit** — interactive user interface  
+- **LangChain** — agent orchestration  
+- **OpenAI API** — LLM reasoning (`gpt-4o-mini`)  
+- **Python Markdown** — HTML report generation  
 
 ---
 
-## ⚙️ Local Setup (Advanced Users)
+## Local Setup (Advanced Users)
 
 Clone the repo and run locally:
 
@@ -64,21 +101,24 @@ streamlit run streamlit_app.py
 
 ---
 
-## 📝 Repo Structure
+## Repo Structure
 
 ```
-AI-Ethics-Agent/
-├── agent.py             # Async LangChain agent logic
-├── streamlit_app.py     # Main Streamlit frontend
-├── prompts.yaml         # Ethical evaluation prompts
-├── reports/             # Saved evaluation reports (.md only)
-├── requirements.txt     # Runtime dependencies
-├── .gitignore           # Excludes .env, .venv, reports, etc.
-├── README.md            # You're reading it!
+ai-ethics-agent/
+├── agent.py              # Agent orchestration logic
+├── workflow/             # Planner & agent components
+├── streamlit_app.py      # Streamlit frontend
+├── prompts.yaml          # Structured ethics prompts
+├── reports/              # Generated reports (.md)
+├── requirements.txt      # Runtime dependencies
+├── .gitignore            # Excludes .env, .venv, reports, etc.
+├── README.md             # You're reading it!
 ```
 
 ---
 
-## 📢 Contributing
+## Feedback & Discussion
 
-Have an idea or suggestion? Open an issue or fork the project!
+This project is intended to spark reflection and discussion around ethical AI use cases.
+
+If you have feedback, questions, or ideas for improvement, feel free to open an issue or explore the codebase.
