@@ -6,16 +6,114 @@ system_prompt: |
   - Explainability
   - Governance & Oversight
 
-  For each category, provide a risk level (Low, Moderate, or High) and a short explanation.
-
 bias_prompt: |
-  Evaluate the risk of bias in the use case described. Consider training data sources, demographic diversity, outcome disparities, and bias mitigation.
+    Evaluate the risk of bias in the use case described. Consider training data sources, demographic diversity, outcome disparities, and bias mitigation.
+
+    Output requirements:
+    - Use the following structure exactly and in this order:
+
+    ### Ethical Focus
+    Provide 1–2 concise sentences explaining:
+    - What ethical considerations generally apply to this category in AI systems
+    - Why this category matters when designing or deploying AI
+
+    ### Key Risks in This Use Case
+    List 2–3 concise bullet points describing:
+    - Specific ethical risks relevant to the described AI use case
+    - Focus on risks that may not be immediately obvious to non-experts
+
+    ### Mitigation Considerations
+    List 2–3 concise bullet points suggesting:
+    - Practical steps, safeguards, or design considerations to reduce or manage the identified risks
+
+    Additional constraints:
+    - Follow SMART brevity guidelines: short, clear, and actionable.
+    - Avoid long paragraphs or academic language.
+    - Do not restate the full use case.
+    - Do not include disclaimers, introductions, or conclusions.
+    - Write for a mixed audience (technical and non-technical stakeholders).
+
+
 
 privacy_prompt: |
   Evaluate the privacy risk. Consider data sensitivity, handling of PII/PHI, storage and transmission security, and regulatory compliance (HIPAA, GDPR, etc).
 
+  Output requirements:
+  - Use the following structure exactly and in this order:
+
+  ### Ethical Focus
+  Provide 1–2 concise sentences explaining:
+  - What ethical considerations generally apply to this category in AI systems
+  - Why this category matters when designing or deploying AI
+
+  ### Key Risks in This Use Case
+  List 2–3 concise bullet points describing:
+  - Specific ethical risks relevant to the described AI use case
+  - Focus on risks that may not be immediately obvious to non-experts
+
+  ### Mitigation Considerations
+  List 2–3 concise bullet points suggesting:
+  - Practical steps, safeguards, or design considerations to reduce or manage the identified risks
+
+  Additional constraints:
+  - Follow SMART brevity guidelines: short, clear, and actionable.
+  - Avoid long paragraphs or academic language.
+  - Do not restate the full use case.
+  - Do not include disclaimers, introductions, or conclusions.
+  - Write for a mixed audience (technical and non-technical stakeholders).
+
+
 explainability_prompt: |
   Evaluate how explainable this system is. Consider whether the model is interpretable or black-box, and whether it provides reasons for decisions.
 
+  Output requirements:
+  - Use the following structure exactly and in this order:
+
+  ### Ethical Focus
+  Provide 1–2 concise sentences explaining:
+  - What ethical considerations generally apply to this category in AI systems
+  - Why this category matters when designing or deploying AI
+
+  ### Key Risks in This Use Case
+  List 2–3 concise bullet points describing:
+  - Specific ethical risks relevant to the described AI use case
+  - Focus on risks that may not be immediately obvious to non-experts
+
+  ### Mitigation Considerations
+  List 2–3 concise bullet points suggesting:
+  - Practical steps, safeguards, or design considerations to reduce or manage the identified risks
+
+  Additional constraints:
+  - Follow SMART brevity guidelines: short, clear, and actionable.
+  - Avoid long paragraphs or academic language.
+  - Do not restate the full use case.
+  - Do not include disclaimers, introductions, or conclusions.
+  - Write for a mixed audience (technical and non-technical stakeholders).
+
+
 governance_prompt: |
   Evaluate the governance and oversight plan. Consider human-in-the-loop, logging, versioning, auditability, and documentation.
+
+  Output requirements:
+  - Use the following structure exactly and in this order:
+
+  ### Ethical Focus
+  Provide 1–2 concise sentences explaining:
+  - What ethical considerations generally apply to this category in AI systems
+  - Why this category matters when designing or deploying AI
+
+  ### Key Risks in This Use Case
+  List 2–3 concise bullet points describing:
+  - Specific ethical risks relevant to the described AI use case
+  - Focus on risks that may not be immediately obvious to non-experts
+
+  ### Mitigation Considerations
+  List 2–3 concise bullet points suggesting:
+  - Practical steps, safeguards, or design considerations to reduce or manage the identified risks
+
+  Additional constraints:
+  - Follow SMART brevity guidelines: short, clear, and actionable.
+  - Avoid long paragraphs or academic language.
+  - Do not restate the full use case.
+  - Do not include disclaimers, introductions, or conclusions.
+  - Write for a mixed audience (technical and non-technical stakeholders).
