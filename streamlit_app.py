@@ -56,8 +56,19 @@ if st.button("Evaluate Use Case"):
 
         
         duration_s = round(time.time() - start_time, 2)
-
+        
         progress.progress(100, text="✅ Evaluation complete!")
+        
+        # --- Plan Summary (quick glance for users) ---
+        st.subheader("🧭 Evaluation Plan")
+
+        depth_summary = ", ".join([f"{c.capitalize()} ({plan.depth.get(c, 'standard')})" for c in plan.categories])
+        st.markdown(f"- **Categories:** {', '.join([c.capitalize() for c in plan.categories])}")
+        st.markdown(f"- **Depth:** {depth_summary}")
+        st.markdown(f"- **Follow-ups suggested:** {len(plan.follow_up_questions)}")
+
+
+
 
         # Build Markdown-style string for report
         markdown_content = f"# AI Use Case Evaluation Report\n\n**Use Case:**\n{user_input.strip()}\n\n"
