@@ -93,17 +93,28 @@ When you click **Evaluate Use Case**, the app generates an **AI Use Case Evaluat
 user_input = st.text_area(
     "Describe your AI use case:",
     placeholder=(
-        "E.g.\n"
-        "1. An AI model that predicts hospital readmission using patient records, deployed on cloud.\n"
-        "2. A chatbot that provides mental health support to teenagers via a mobile app.\n"
-        "3. A facial recognition system used for access control in a corporate office.\n"
-        "\n"
-        "Full Example:\n"
-        "A machine learning system that analyzes loan applications to predict credit risk. The model uses demographic, financial, and behavioral data, and is integrated into an online banking platform to automate loan approvals."
+        "Example:\n"
+        "An AI model that predicts hospital readmission using patient records.\n\n"
+        "Tip: Include what the system does, who it affects, and what data it uses."
     ),
-    height=250,
+    height=220,
     key="use_case_input"
 )
+
+with st.expander("💡 Need inspiration? See example use cases"):
+    st.markdown(
+        """
+        **Additional examples:**
+        - A chatbot that provides mental health support to teenagers via a mobile app.
+        - A facial recognition system used for access control in a corporate office.
+
+        **Full example:**
+        A machine learning system that analyzes loan applications to predict credit risk.
+        The model uses demographic, financial, and behavioral data and is integrated
+        into an online banking platform to automate loan approvals.
+        """
+    )
+
 
 if st.button("Evaluate Use Case"):
     if not user_input.strip():
