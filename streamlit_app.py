@@ -3,9 +3,8 @@ from agent import evaluate_use_case
 from pathlib import Path
 from datetime import datetime
 import time 
-from docx import Document
-from docx.shared import Pt
-from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
+import html
+
 
 # Streamlit page config
 st.set_page_config(page_title="AI Ethics Agent", layout="centered")
@@ -13,22 +12,33 @@ MODEL_NAME = "gpt-4o-mini"
 if "step_log" not in st.session_state:
     st.session_state.step_log = []
 st.title("🛡️ AI Ethics Agent")
-st.markdown("""
-Use this tool to **evaluate your AI use case** across key ethical risk categories:
+st.markdown(
+    """
+This tool evaluates an AI use case across **four key ethical risk areas**:
 - **Bias**
 - **Privacy**
 - **Explainability**
 - **Governance & Oversight**
 
-💡 Understanding these areas is critical before deploying any AI solution — especially for systems that impact real people. This tool helps uncover ethical risks you may not have considered.
-  
-_One report is generated per use case and downloadable as a Word document (.docx)._""")
+💡 Understanding these areas is critical before deploying any AI solution, especially for systems that impact real people. This tool helps uncover ethical risks you may not have considered.
+
+When you click **Evaluate Use Case**, the app generates an **AI Use Case Evaluation Report** and provides download options.
+"""
+)
 
 # Input box
 user_input = st.text_area(
     "Describe your AI use case:",
-    placeholder="E.g. An AI model that predicts hospital readmission using patient records, deployed on cloud...",
-    height=200,
+    placeholder=(
+        "E.g.\n"
+        "1. An AI model that predicts hospital readmission using patient records, deployed on cloud.\n"
+        "2. A chatbot that provides mental health support to teenagers via a mobile app.\n"
+        "3. A facial recognition system used for access control in a corporate office.\n"
+        "\n"
+        "Full Example:\n"
+        "A machine learning system that analyzes loan applications to predict credit risk. The model uses demographic, financial, and behavioral data, and is integrated into an online banking platform to automate loan approvals."
+    ),
+    height=250,
     key="use_case_input"
 )
 
@@ -96,50 +106,51 @@ if st.button("Evaluate Use Case"):
         reports_dir.mkdir(exist_ok=True)
         md_path = reports_dir / f"eval_{timestamp}.md"
         md_path.write_text(markdown_content, encoding="utf-8")
+      
+        # --- Downloads (placed directly before report) ---
+        st.markdown("### ⬇️ Download Report")
 
-        # Generate .docx from markdown_content (no saving to disk)
-        doc = Document()
-        styles = doc.styles
-        styles["Normal"].font.name = "Calibri"
-        styles["Normal"].font.size = Pt(11)
+        # Build HTML version for download
+        html_report = (
+            "<html><head><meta charset='utf-8'></head><body>"
+            + "<pre style='white-space: pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace;'>"
+            + html.escape(markdown_content)
+            + "</pre></body></html>"
+        )
 
-        for line in markdown_content.strip().split("\n"):
-            line = line.strip()
-            if line.startswith("### "):
-                doc.add_heading(line[4:].strip(), level=3)
-            elif line.startswith("## "):
-                doc.add_heading(line[3:].strip(), level=2)
-            elif line.startswith("# "):
-                doc.add_heading(line[2:].strip(), level=1)
-            elif line.startswith("**") and line.endswith("**"):
-                para = doc.add_paragraph()
-                run = para.add_run(line[2:-2])
-                run.bold = True
-            elif "**" in line:
-                para = doc.add_paragraph()
-                segments = line.split("**")
-                for i, segment in enumerate(segments):
-                    run = para.add_run(segment)
-                    if i % 2 == 1:
-                        run.bold = True
-            elif line.startswith("-") or line.startswith("\u2022"):
-                para = doc.add_paragraph(line[1:].strip(), style="List Bullet")
-            elif line:
-                doc.add_paragraph(line)
-                
+        # Tight layout: small gap + aligned buttons
+        col1, col2, col3 = st.columns([2, 2, 4], gap="small")
 
+        with col1:
+            st.download_button(
+                label="⬇️ Download .md",
+                data=markdown_content.encode("utf-8"),
+                file_name=f"eval_{timestamp}.md",
+                mime="text/markdown",
+                use_container_width=True,
+            )
+
+        with col2:
+            st.download_button(
+                label="⬇️ Download .html",
+                data=html_report.encode("utf-8"),
+                file_name=f"eval_{timestamp}.html",
+                mime="text/html",
+                use_container_width=True,
+            )
+
+
+        # Display report (bordered)
+        st.subheader("✅ Evaluation Results")
+        with st.container(border=True):
+            st.markdown(markdown_content)
+
+               
         # Display report
         st.subheader("✅ Evaluation Results")
-        st.markdown(markdown_content)
 
-        # Download .docx (in-memory only)
-        from io import BytesIO
-        docx_buffer = BytesIO()
-        doc.save(docx_buffer)
-        docx_buffer.seek(0)
-        st.download_button(
-            "📄 Download Word Report (.docx)",
-            data=docx_buffer,
-            file_name=f"eval_{timestamp}.docx",
-            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        )
+        with st.container(border=True):
+            st.markdown(markdown_content)
+
+
+
